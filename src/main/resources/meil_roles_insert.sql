@@ -1,0 +1,5 @@
+INSERT INTO meil.roles (id, created_date, description, role_name, updated_date) VALUES (1, '2023-10-06 19:32:30.969310', 'Super admin for entire software. Can create and manage ADMIN persons.', 'SUPERADMIN', '2023-10-06 19:32:30.969310');
+INSERT INTO meil.roles (id, created_date, description, role_name, updated_date) VALUES (2, '2023-10-06 19:32:47.584332', 'ADMIN for entire software.  Can can create and manage all others users of the software', 'ADMIN', '2023-10-06 19:32:47.584332');
+INSERT INTO meil.roles (id, created_date, description, role_name, updated_date) VALUES (3, '2023-10-06 19:33:01.594325', 'Master Data Admin - persons with top level access to Master Data Module', 'MDADMIN', '2023-10-06 19:33:01.594325');
+INSERT INTO meil.roles (id, created_date, description, role_name, updated_date) VALUES (4, '2023-10-06 19:33:23.224253', 'Master Data Manager - persons who can enter transaction data into master data module', 'MDMANAGER', '2023-10-06 19:33:23.224253');
+INSERT INTO meil.roles (id, created_date, description, role_name, updated_date) VALUES (5, '2023-10-06 19:33:40.480148', 'General users of the software', 'GENUSER', '2023-10-06 19:33:40.480148');
