@@ -93,10 +93,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction deallotProjectSite(DeallotProjectSiteRequest request) {
         // fetch all existing transactions by project id and action Type 2 to check if the project has already been dealloted
-        var existingTransactions = this.transactionRepository.findByProjectIdAndActionId(request.projectId(), 2);
+        var existingTransactionsT101 = this.transactionRepository.findByProjectIdAndActionId(request.projectId(), 1);
+        var existingTransactionsT102 = this.transactionRepository.findByProjectIdAndActionId(request.projectId(), 2);
 
         // if the latest transaction is of type T102, return null
-        if (!existingTransactions.isEmpty()) {
+        if (existingTransactionsT101.isEmpty() || !existingTransactionsT102.isEmpty()) {
             return null;
         } else {
             // if the project site exists, create a new transaction with action type t102. ELSE return null.
