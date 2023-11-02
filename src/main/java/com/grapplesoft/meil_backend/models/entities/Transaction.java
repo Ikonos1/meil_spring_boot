@@ -15,13 +15,13 @@ import java.time.LocalDate;
 @Table(name = "transaction", schema = "meil", indexes = {
         @Index(name = "actiontypeid", columnList = "actiontypeid"),
         @Index(name = "employeeid", columnList = "employeeid"),
-        @Index(name = "fromprojectid", columnList = "fromprojectid"),
+        @Index(name = "fromProjectId", columnList = "fromProjectId"),
         @Index(name = "toprojectid", columnList = "toprojectid"),
         @Index(name = "projectsite", columnList = "projectsite"),
         @Index(name = "hsecoordid", columnList = "hsecoordid"),
         @Index(name = "hsemgrid", columnList = "hsemgrid"),
-        @Index(name = "dept1", columnList = "dept1"),
-        @Index(name = "dept2", columnList = "dept2"),
+        @Index(name = "deptIdFrom", columnList = "deptIdFrom"),
+        @Index(name = "deptIdTo", columnList = "deptIdTo"),
         @Index(name = "function1", columnList = "function1"),
         @Index(name = "function2", columnList = "function2"),
         @Index(name = "newstatus", columnList = "newstatus"),
@@ -47,7 +47,7 @@ public class Transaction {
     private Employee employeeid;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fromprojectid")
+    @JoinColumn(name = "fromProjectId")
     private Project fromprojectid;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,11 +76,11 @@ public class Transaction {
     private LocalDate date2;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dept1")
+    @JoinColumn(name = "deptIdFrom")
     private Department dept1;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dept2")
+    @JoinColumn(name = "deptIdTo")
     private Department dept2;
 
     @ManyToOne(fetch = FetchType.LAZY)
