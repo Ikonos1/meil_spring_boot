@@ -17,6 +17,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query(value = "SELECT * FROM Transaction t WHERE t.fromprojectid = :projectId AND t.actiontypeid = :actionTypeId", nativeQuery = true)
     List<Transaction> findByProjectIdAndActionId(@Param("projectId") Long projectId, @Param("actionTypeId") Integer actionTypeId);
 
+    @Query(value = "SELECT * FROM Transaction t WHERE t.fromprojectid = :projectId AND t.hsecoordid = :employeeId AND t.actiontypeid = :actionId", nativeQuery = true)
+    List<Transaction> findByProjectIdAndEmployeeIdAndActionId(@Param("projectId") Long projectId, @Param("employeeId") Long employeeId, @Param("actionId") Integer actionId);
+
     @Query(value = "SELECT * FROM Transaction t WHERE t.fromprojectid = :projectId AND t.hsecoordid = :employeeId", nativeQuery = true)
     List<Transaction> findByProjectIdAndEmployeeId(@Param("projectId") Long projectId, @Param("employeeId") Long employeeId);
 

@@ -36,7 +36,7 @@ public interface TransactionService {
     void deleteTransaction(Long id);
 
     Result<Transaction> changeDepartment(ChangeDepartment cdept);
-    Result<Transaction> employeetransfer(EmployeeTransfer empt);
+    Result<Transaction> employeeTransfer(EmployeeTransfer empt);
     Result<Transaction> employeetempdepu(EmployeeTransfer empt);
     Result<Transaction> rejointempdepu(EmployeeTransfer empt);
 }

@@ -8,6 +8,7 @@ import com.grapplesoft.meil_backend.models.entities.Transaction;
 import com.grapplesoft.meil_backend.models.request.transactions.AllotProjectSiteRequestDto;
 import com.grapplesoft.meil_backend.models.request.transactions.ChangeDepartment;
 import com.grapplesoft.meil_backend.models.request.transactions.DeallotProjectSiteRequest;
+import com.grapplesoft.meil_backend.models.request.transactions.EmployeeTransfer;
 import com.grapplesoft.meil_backend.models.response.ApiResponse;
 import com.grapplesoft.meil_backend.services.transactionService.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,16 @@ public class TransactionController extends BaseController {
         Result<Transaction> result = transactionService.changeDepartment(cdept);
         if (result.isSuccess()) {
             return ResponseEntity.ok(ApiResponseBuilder.success(null, "Employee department changed. T103 executed successfully."));
+        } else {
+            return ResponseEntity.badRequest().body(ApiResponseBuilder.badRequest(result.error().getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/t104", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<ApiResponse<String>> employeetransaction(@RequestBody EmployeeTransfer empt) {
+        Result<Transaction> result = transactionService.employeeTransfer(empt);
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(ApiResponseBuilder.success(null, "Employee Transfered sucessfully"));
         } else {
             return ResponseEntity.badRequest().body(ApiResponseBuilder.badRequest(result.error().getMessage()));
         }

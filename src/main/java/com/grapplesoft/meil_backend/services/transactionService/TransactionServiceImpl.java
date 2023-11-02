@@ -29,14 +29,15 @@ public class TransactionServiceImpl implements TransactionService {
                                   @Qualifier("addressRepository") AddressRepository addressRepository,
                                   @Qualifier("actionTypeRepository") ActionTypeRepository actionTypeRepository,
                                   @Qualifier("departmentRepository") DepartmentRepository departmentRepository,
-                                  EmployeeRepository employeeRepository) {
+                                  @Qualifier("employeeRepository") EmployeeRepository employeeRepository,
+                                  @Qualifier("hseFunctionRepository") HseFunctionRepository hseFunctionRepository) {
         this.transactionRepository = transactionRepository;
         this.projectSiteRepository = projectSiteRepository;
         this.projectRepository = projectRepository;
         this.employeeService = employeeService;
         this.addressRepository = addressRepository;
         this.departmentRepository = departmentRepository;
-
+        this.hseFunctionRepository = hseFunctionRepository;
         actionTypes.addAll(actionTypeRepository.findAll());
         this.employeeRepository = employeeRepository;
     }
@@ -109,7 +110,7 @@ public class TransactionServiceImpl implements TransactionService {
             return Result.failure(new Exception("No matching project found to deallot."));
         } else if (!existingTransactionsT102.isEmpty()) {
             return Result.failure(new Exception("Project has already been dealloted."));
-        }  else {
+        } else {
             // if the project site exists, create a new transaction with action type t102. ELSE return null.
             Project project = this.projectRepository.findById(request.projectId()).orElse(null);
             Employee projCoordinator = this.employeeService.getEmployeeById(request.projectCoordinatorId());
@@ -185,9 +186,87 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    private boolean isProjectDealloted(Long projectId, Long employeeId) {
+        return !transactionRepository.findByProjectIdAndEmployeeIdAndActionId(projectId, employeeId, 2).isEmpty();
+    }
+
     @Override
-    public Result<Transaction> employeetransfer(EmployeeTransfer empt) {
-        return null;
+    public Result<Transaction> employeeTransfer(EmployeeTransfer empt) {
+
+        if (!isProjectDealloted(empt.fromprojectid(), empt.employeeid())) {
+            // If the action type is not found, proceed with the employee transfer
+            Employee emp = employeeService.getEmployeeById(empt.employeeid());
+
+            if (emp != null) {
+
+                // Find the source and target project sites by their IDs
+                Project fromproject = this.projectRepository.findById(empt.fromprojectid()).orElse(null);
+                Project toproject = this.projectRepository.findById(empt.toprojectid()).orElse(null);
+
+                // Find the action type (T104)
+                Actiontype action = this.getActionType(ActionTypeEnum.T115);
+
+                // Find Hsefunctions for the source and target functions
+                Hsefunction fun1 = hseFunctionRepository.findById(empt.function1()).orElse(null);
+                Hsefunction fun2 = hseFunctionRepository.findById(empt.function2()).orElse(null);
+
+                if (fromproject == null || toproject == null) {
+                    return Result.failure(new Exception(String.format("No record found for project => %s", fromproject == null ? empt.fromprojectid() : empt.toprojectid())));
+                }
+
+//                if (fromproject == null) {
+//                    return Result.failure(new Exception("No record found in fromproject."));
+//                }
+//
+//                if (toproject == null) {
+//
+//                    return Result.failure(new Exception("No record found in  toproject."));
+//                }
+
+                if (action == null) {
+                    return Result.failure(new Exception("No record found in  action"));
+                }
+
+                if (fun1 == null || fun2 == null) {
+                    return Result.failure(new Exception(String.format("No record found for hsefunction => %s", fun1 == null ? empt.function1() : empt.function2())));
+                }
+
+//                if (fun1 == null) {
+//
+//                    return Result.failure(new Exception("No record found in  hsefunction1"));
+//                }
+//
+//                if (fun2 == null) {
+//
+//                    return Result.failure(new Exception("No record found in  hsefunction1"));
+//                }
+
+                emp.setHseFunctionId(fun2);
+                emp.setProjCode(toproject);
+                emp.setEditDate(LocalDate.now());
+                employeeRepository.save(emp);
+                // Create a new transaction for the employee transfer
+                Transaction trsanc = this.addTransaction(Transaction.builder()
+                        .actiontypeid(action)
+                        .function1(fun1)
+                        .function2(fun2)
+                        .fromprojectid(fromproject)
+                        .toprojectid(toproject)
+                        .createuserid(emp)
+                        .date1(empt.date1())
+                        .date2(empt.date2())
+                        .actiondate(LocalDate.now())
+                        .createdate(LocalDate.now())
+                        .build());
+
+                // Set a success response with the transaction data
+                return Result.success(trsanc);
+            } else {
+                return Result.failure(new Exception("No Employee found"));
+            }
+        } else {
+            return Result.failure(new Exception("This Employee's project is already de-allotted"));
+        }
     }
 
     @Override
@@ -216,8 +295,9 @@ public class TransactionServiceImpl implements TransactionService {
     private final ProjectRepository projectRepository;
     private final AddressRepository addressRepository;
     private final DepartmentRepository departmentRepository;
+    private final EmployeeRepository employeeRepository;
+    private final HseFunctionRepository hseFunctionRepository;
     private final EmployeeService employeeService;
 
     private final List<Actiontype> actionTypes = new ArrayList<>();
-    private final EmployeeRepository employeeRepository;
 }
