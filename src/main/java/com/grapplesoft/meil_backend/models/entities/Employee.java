@@ -137,6 +137,9 @@ public class Employee {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "is_password_set")
+    private Boolean isPasswordSet;
+
     // tokens
     @OneToOne(mappedBy = "employee", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Token token;
