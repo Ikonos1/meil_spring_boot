@@ -11,10 +11,11 @@ import com.grapplesoft.meil_backend.models.request.AddEmployeeRequest;
 import com.grapplesoft.meil_backend.models.request.UpdateEmployeeRequest;
 import com.grapplesoft.meil_backend.repositories.EmployeeRepository;
 import com.grapplesoft.meil_backend.repositories.TokenRepository;
+import com.grapplesoft.meil_backend.services.mailService.MailService;
 import com.grapplesoft.meil_backend.services.roleService.RoleService;
 import com.grapplesoft.meil_backend.services.tokenService.TokenService;
 import com.grapplesoft.meil_backend.utils.PaginationUtility;
-import com.grapplesoft.meil_backend.utils.passwordUtility.PasswordEncoder;
+import com.grapplesoft.meil_backend.utils.passwordUtility.PasswordUtility;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,18 +30,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final RoleService roleService;
     private final TokenService tokenService;
-    private static final BCryptPasswordEncoder passwordEncoder = PasswordEncoder.getPasswordEncoder();
+    private final MailService mailService;
+    private static final BCryptPasswordEncoder passwordEncoder = PasswordUtility.getPasswordEncoder();
     private final TokenRepository tokenRepository;
 
     @Autowired
     public EmployeeServiceImpl(@Qualifier("employeeRepository") EmployeeRepository employeeRepository,
                                RoleService roleService,
                                TokenService tokenService,
-                               TokenRepository tokenRepository) {
+                               TokenRepository tokenRepository,
+                               MailService mailService) {
         this.employeeRepository = employeeRepository;
         this.roleService = roleService;
         this.tokenService = tokenService;
         this.tokenRepository = tokenRepository;
+        this.mailService = mailService;
     }
 
     /**
@@ -64,14 +68,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         Role role = this.roleService.getRoleByRoleId(addEmployeeRequest.role());
 
         // encode the password
-        String passwordEncoded = passwordEncoder.encode(addEmployeeRequest.password());
+        String generatedPassword = PasswordUtility.generateRandomPassword();
+        String passwordEncoded = passwordEncoder.encode(generatedPassword);
 
         // create the employee object
-        Employee employee = EmployeeBuilder.fromAddEmployeeRequest(addEmployeeRequest, role, passwordEncoded);
+        Employee employee = EmployeeBuilder.fromAddEmployeeRequest(addEmployeeRequest, role, passwordEncoded, false);
 
         // save this employee without token, so an employeeid is auto-generated
         employee = this.employeeRepository.save(employee);
         // save the employee object to the database and return the saved object
+
+        // send email to the employee with the password
+        this.mailService.sendMail("Account successfully created!", employee.getEmailOffice(),
+                "You account has been successfully created. Your auto generated password is: " + generatedPassword + ". Please change your password after logging in.");
 
         // create token for the employee
         Token token = this.tokenService.createTokenForEmployee(employee);
@@ -127,7 +136,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setWhatsAppNum(request.whatsAppNum() != null ? request.whatsAppNum() : employee.getWhatsAppNum());
             employee.setRemarks(request.remarks() != null ? request.remarks() : employee.getRemarks());
 
-            if(request.password() != null) {
+            if (request.password() != null) {
                 // encode the password
                 String passwordEncoded = passwordEncoder.encode(request.password());
                 employee.setPassword(passwordEncoded);

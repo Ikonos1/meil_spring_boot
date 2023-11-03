@@ -32,7 +32,7 @@ public class EmployeeBuilder {
         );
     }
 
-    public static Employee fromAddEmployeeRequest(AddEmployeeRequest addEmployeeRequest, Role role, String passwordEncoded) {
+    public static Employee fromAddEmployeeRequest(AddEmployeeRequest addEmployeeRequest, Role role, String passwordEncoded, Boolean isPasswordSet) {
         return Employee.builder()
                 .employeeFirstName(addEmployeeRequest.firstName())
                 .employeeLastName(addEmployeeRequest.lastName())
@@ -47,6 +47,7 @@ public class EmployeeBuilder {
                 .mobile2(addEmployeeRequest.mobile2())
                 .mobile3(addEmployeeRequest.mobile3())
                 .password(passwordEncoded)
+                .isPasswordSet(isPasswordSet)
                 .build();
     }
 }

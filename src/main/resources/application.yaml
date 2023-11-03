@@ -23,6 +23,7 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+
   sql:
     init:
       mode: embedded
@@ -45,6 +46,18 @@ spring:
     serialization:
       write-dates-as-timestamps: false
       fail-on-empty-beans: false
+  mail:
+    username: meil@ikonostechnologies.com
+    host: smtp.gmail.com
+    password: uuwfzncuqjffqlas
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 jwt:
   secret: "my-ultra-strong-jwt-secret-for-meil"
@@ -53,6 +66,8 @@ jwt:
 # enable graceful shutdown
 server:
   shutdown: graceful
+  port: 1234
+  address: 0.0.0.0
 
 # actuator shutdown
 management:

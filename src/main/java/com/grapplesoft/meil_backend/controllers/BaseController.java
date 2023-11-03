@@ -1,19 +1,25 @@
 package com.grapplesoft.meil_backend.controllers;
 
+import com.grapplesoft.meil_backend.models.request.BaseSendMail;
 import com.grapplesoft.meil_backend.models.response.ApiResponse;
+import com.grapplesoft.meil_backend.services.mailService.MailService;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 public class BaseController {
+
+
+//    public BaseController(MailService mailService) {
+//        this.mailService = mailService;
+//    }
 
 
     /**
@@ -34,4 +40,6 @@ public class BaseController {
                 HttpStatus.BAD_REQUEST.value(), errors, "Fields missing!"
         );
     }
+
+
 }
