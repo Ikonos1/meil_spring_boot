@@ -28,6 +28,8 @@ dependencies {
     // spring data and validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    implementation 'org.springframework.boot:spring-boot-starter-tomcat'
+
     // spring web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
