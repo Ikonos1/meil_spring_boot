@@ -94,6 +94,9 @@ public record UpdateEmployeeRequest(
         String remarks,
 
         @JsonProperty("password")
-        String password
+        String password,
+
+        @JsonProperty("isPasswordSet")
+        Boolean isPasswordSet
 ) implements Serializable {
 }
